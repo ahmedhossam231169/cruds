@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cruds</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+  
+    
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span  class="logo-text">cruds <i class='fas fa-store-alt-slash' style='font-size:24px'></i> </span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="icon add-icon"></span>
+                        <span class="nav-text">Add Item</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="search.html" class="nav-link">
+                        <span class="icon search-icon"></span>
+                        <span class="nav-text">Search</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="home.html" class="nav-link">
+                        <span class="icon home-icon"></span>
+                        <span class="nav-text">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="icon store-icon"></span>
+                        <span class="nav-text">Store</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="main-content">
+      <h2>create item</h2>
+      <div class="inputs">
+        <input id="title" type="text" placeholder="item name">
+        <input onkeyup="getTotal()" type="number" id="price" placeholder="item price">
+        <input onkeyup="getTotal()" type="number" id="taxes" placeholder="taxes">
+        <input onkeyup="getTotal()"  type="number" id="ads" placeholder="ads">
+        <input onkeyup="getTotal()"   type="number" id="discount" placeholder="discount">
+        <input onkeyup="getTotal()" onblur="calculateCount()" type="number" id="count" placeholder="count">
+        <input type="text" id="category" placeholder="category">
+        <small id="total"></small>
+        <button id="submit">create</button>
+      </div>
+    </div>
+
+  <script src="main.js"></script>
+  </body>
+</html>

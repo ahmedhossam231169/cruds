@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cruds</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+  </head>
+<body>
+
+
+
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <span  class="logo-text">cruds <i class='fas fa-store-alt-slash' style='font-size:24px'></i> </span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="icon add-icon"></span>
+                        <span class="nav-text">Add Item</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="search.html" class="nav-link">
+                        <span class="icon search-icon"></span>
+                        <span class="nav-text">Search</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="home.html" class="nav-link">
+                        <span class="icon home-icon"></span>
+                        <span class="nav-text">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="icon store-icon"></span>
+                        <span class="nav-text">Store</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+
+  <div class="table-container">
+    <h2>Products List</h2>
+
+    <div id="dAll">
+
+    </div>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Price</th>
+          <th>Taxes</th>
+          <th>Ads</th>
+          <th>Discount</th>
+          <th>Total</th>
+          <th>Count</th>
+          <th>Category</th>
+          <th>Update</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <!-- Data will be loaded here -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Update Modal -->
+  <div id="updateModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Update Product</h2>
+        <span class="close" onclick="closeUpdateModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="updateTitle">Product Title:</label>
+          <input type="text" id="updateTitle" placeholder="Product name">
+        </div>
+        <div class="form-group">
+          <label for="updatePrice">Price:</label>
+          <input type="number" id="updatePrice" placeholder="Product price" oninput="updateModalTotal()">
+        </div>
+        <div class="form-group">
+          <label for="updateTaxes">Taxes:</label>
+          <input type="number" id="updateTaxes" placeholder="Taxes" oninput="updateModalTotal()">
+        </div>
+        <div class="form-group">
+          <label for="updateAds">Ads:</label>
+          <input type="number" id="updateAds" placeholder="Ads" oninput="updateModalTotal()">
+        </div>
+        <div class="form-group">
+          <label for="updateDiscount">Discount:</label>
+          <input type="number" id="updateDiscount" placeholder="Discount" oninput="updateModalTotal()">
+        </div>
+        <div class="form-group">
+          <label for="updateCount">Count:</label>
+          <input type="number" id="updateCount" placeholder="Count" oninput="updateModalTotal()">
+        </div>
+        <div class="form-group">
+          <label for="updateCategory">Category:</label>
+          <input type="text" id="updateCategory" placeholder="Category">
+        </div>
+        <div class="form-group">
+          <label>Total: <span id="updateTotal">$0</span></label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeUpdateModal()" class="btn-cancel">Cancel</button>
+        <button onclick="saveUpdate()" class="btn-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="button">
+  <svg class="svgIcon" viewBox="0 0 384 512">
+    <path
+      d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
+    ></path>
+  </svg>
+</button>
+<script src="main.js"></script>
+</body>
+ 
