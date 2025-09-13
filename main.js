@@ -67,27 +67,211 @@ if(localStorage.product != null){
   dataPro = [];
 }
 
-if(title.value !=""){
-    
+
+// Validation function to check if all required fields are filled
+function validateProduct() {
+  const errors = [];
+  
+  // Check required fields
+  if (!title || !title.value.trim()) {
+    errors.push("Product title is required");
+  } else if (title.value.trim().length < 2) {
+    errors.push("Product title must be at least 2 characters long");
+  }
+  
+  if (!price || !price.value.trim() || isNaN(price.value) || parseFloat(price.value) <= 0) {
+    errors.push("Valid price is required (must be greater than 0)");
+  } else if (parseFloat(price.value) > 999999) {
+    errors.push("Price cannot exceed $999,999");
+  }
+  
+  if (!category || !category.value.trim()) {
+    errors.push("Product category is required");
+  } else if (category.value.trim().length < 2) {
+    errors.push("Product category must be at least 2 characters long");
+  }
+  
+  // Check optional numeric fields (if provided, they should be valid numbers)
+  if (taxes && taxes.value.trim() && (isNaN(taxes.value) || parseFloat(taxes.value) < 0)) {
+    errors.push("Taxes must be a valid number (0 or greater)");
+  } else if (taxes && taxes.value.trim() && parseFloat(taxes.value) > 999999) {
+    errors.push("Taxes cannot exceed $999,999");
+  }
+  
+  if (ads && ads.value.trim() && (isNaN(ads.value) || parseFloat(ads.value) < 0)) {
+    errors.push("Ads must be a valid number (0 or greater)");
+  } else if (ads && ads.value.trim() && parseFloat(ads.value) > 999999) {
+    errors.push("Ads cannot exceed $999,999");
+  }
+  
+  if (discount && discount.value.trim() && (isNaN(discount.value) || parseFloat(discount.value) < 0)) {
+    errors.push("Discount must be a valid number (0 or greater)");
+  } else if (discount && discount.value.trim() && parseFloat(discount.value) > 999999) {
+    errors.push("Discount cannot exceed $999,999");
+  }
+  
+  if (count && count.value.trim() && (isNaN(count.value) || parseFloat(count.value) <= 0)) {
+    errors.push("Count must be a valid number (greater than 0)");
+  } else if (count && count.value.trim() && parseFloat(count.value) > 999999) {
+    errors.push("Count cannot exceed 999,999");
+  }
+  
+  return errors;
+}
+
+// Function to show validation errors
+function showValidationErrors(errors) {
+  // Remove any existing error messages
+  const existingError = document.getElementById('validation-errors');
+  if (existingError) {
+    existingError.remove();
+  }
+  
+  // Create error message container
+  const errorContainer = document.createElement('div');
+  errorContainer.id = 'validation-errors';
+  errorContainer.style.cssText = `
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    border-left: 4px solid #fff;
+    animation: slideInDown 0.3s ease;
+  `;
+  
+  // Add animation keyframes
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideInDown {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Create error list
+  const errorList = document.createElement('ul');
+  errorList.style.cssText = `
+    margin: 0;
+    padding-left: 20px;
+    list-style-type: disc;
+  `;
+  
+  errors.forEach(error => {
+    const errorItem = document.createElement('li');
+    errorItem.textContent = error;
+    errorItem.style.cssText = `
+      margin: 5px 0;
+      font-weight: 500;
+    `;
+    errorList.appendChild(errorItem);
+  });
+  
+  errorContainer.appendChild(errorList);
+  
+  // Insert error message before the form
+  const formContainer = document.querySelector('.inputs');
+  if (formContainer) {
+    formContainer.parentNode.insertBefore(errorContainer, formContainer);
+  }
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    if (errorContainer.parentNode) {
+      errorContainer.style.animation = 'slideInDown 0.3s ease reverse';
+      setTimeout(() => {
+        if (errorContainer.parentNode) {
+          errorContainer.remove();
+          document.head.removeChild(style);
+        }
+      }, 300);
+    }
+  }, 5000);
+}
+
+// Function to highlight invalid fields
+function highlightInvalidFields() {
+  const fields = [
+    { element: title, required: true },
+    { element: price, required: true, numeric: true },
+    { element: category, required: true },
+    { element: taxes, required: false, numeric: true },
+    { element: ads, required: false, numeric: true },
+    { element: discount, required: false, numeric: true },
+    { element: count, required: false, numeric: true }
+  ];
+  
+  fields.forEach(field => {
+    if (field.element) {
+      const isValid = field.element.value.trim() !== '' && 
+                     (!field.numeric || !isNaN(field.element.value)) &&
+                     (!field.required || field.element.value.trim() !== '');
+      
+      if (!isValid && field.element.value.trim() !== '') {
+        field.element.style.borderColor = '#dc3545';
+        field.element.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+      } else if (field.required && field.element.value.trim() === '') {
+        field.element.style.borderColor = '#dc3545';
+        field.element.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+      } else {
+        field.element.style.borderColor = '';
+        field.element.style.boxShadow = '';
+      }
+    }
+  });
+}
+
+// Function to clear field highlighting
+function clearFieldHighlighting() {
+  const fields = [title, price, category, taxes, ads, discount, count];
+  fields.forEach(field => {
+    if (field) {
+      field.style.borderColor = '';
+      field.style.boxShadow = '';
+    }
+  });
+}
+
+// Only set up form event listeners if the create button exists
 if(create) {
   create.onclick = function(){
-   let newPro = {
-     title:title.value,
-     price:price.value,
-     taxes:taxes.value,
-     ads:ads.value,
-     discount:discount.value,
-     total:total.innerHTML,
-     count:count.value,
-     category:category.value,
+    // Clear any previous validation errors and highlighting
+    const existingError = document.getElementById('validation-errors');
+    if (existingError) {
+      existingError.remove();
     }
-}
-// Only set up form event listeners if the create button exists
+    clearFieldHighlighting();
+    
+    // Validate the form
+    const validationErrors = validateProduct();
+    
+    if (validationErrors.length > 0) {
+      showValidationErrors(validationErrors);
+      highlightInvalidFields();
+      return; // Stop execution if validation fails
+    }
+    
+    // If validation passes, create the product
+    let newPro = {
+      title: title.value.trim(),
+      price: price.value,
+      taxes: taxes.value || 0,
+      ads: ads.value || 0,
+      discount: discount.value || 0,
+      total: total.innerHTML,
+      count: count.value || 1,
+      category: category.value.trim(),
+    }
+    
     cleardata()
     dataPro.push(newPro)
-
     localStorage.setItem("product", JSON.stringify(dataPro))
     showa();
+    
+    // Show success message
+    showSuccessMessage('Product created successfully!');
   }
   
 }
@@ -205,9 +389,182 @@ function closeUpdateModal() {
   currentUpdateIndex = -1;
 }
 
+// Validation function for update modal
+function validateUpdateProduct() {
+  const errors = [];
+  
+  // Get update form elements
+  const updateTitle = document.getElementById('updateTitle');
+  const updatePrice = document.getElementById('updatePrice');
+  const updateCategory = document.getElementById('updateCategory');
+  const updateTaxes = document.getElementById('updateTaxes');
+  const updateAds = document.getElementById('updateAds');
+  const updateDiscount = document.getElementById('updateDiscount');
+  const updateCount = document.getElementById('updateCount');
+  
+  // Check required fields
+  if (!updateTitle || !updateTitle.value.trim()) {
+    errors.push("Product title is required");
+  } else if (updateTitle.value.trim().length < 2) {
+    errors.push("Product title must be at least 2 characters long");
+  }
+  
+  if (!updatePrice || !updatePrice.value.trim() || isNaN(updatePrice.value) || parseFloat(updatePrice.value) <= 0) {
+    errors.push("Valid price is required (must be greater than 0)");
+  } else if (parseFloat(updatePrice.value) > 999999) {
+    errors.push("Price cannot exceed $999,999");
+  }
+  
+  if (!updateCategory || !updateCategory.value.trim()) {
+    errors.push("Product category is required");
+  } else if (updateCategory.value.trim().length < 2) {
+    errors.push("Product category must be at least 2 characters long");
+  }
+  
+  // Check optional numeric fields (if provided, they should be valid numbers)
+  if (updateTaxes && updateTaxes.value.trim() && (isNaN(updateTaxes.value) || parseFloat(updateTaxes.value) < 0)) {
+    errors.push("Taxes must be a valid number (0 or greater)");
+  } else if (updateTaxes && updateTaxes.value.trim() && parseFloat(updateTaxes.value) > 999999) {
+    errors.push("Taxes cannot exceed $999,999");
+  }
+  
+  if (updateAds && updateAds.value.trim() && (isNaN(updateAds.value) || parseFloat(updateAds.value) < 0)) {
+    errors.push("Ads must be a valid number (0 or greater)");
+  } else if (updateAds && updateAds.value.trim() && parseFloat(updateAds.value) > 999999) {
+    errors.push("Ads cannot exceed $999,999");
+  }
+  
+  if (updateDiscount && updateDiscount.value.trim() && (isNaN(updateDiscount.value) || parseFloat(updateDiscount.value) < 0)) {
+    errors.push("Discount must be a valid number (0 or greater)");
+  } else if (updateDiscount && updateDiscount.value.trim() && parseFloat(updateDiscount.value) > 999999) {
+    errors.push("Discount cannot exceed $999,999");
+  }
+  
+  if (updateCount && updateCount.value.trim() && (isNaN(updateCount.value) || parseFloat(updateCount.value) <= 0)) {
+    errors.push("Count must be a valid number (greater than 0)");
+  } else if (updateCount && updateCount.value.trim() && parseFloat(updateCount.value) > 999999) {
+    errors.push("Count cannot exceed 999,999");
+  }
+  
+  return errors;
+}
+
+// Function to show validation errors in update modal
+function showUpdateValidationErrors(errors) {
+  // Remove any existing error messages in modal
+  const existingError = document.getElementById('update-validation-errors');
+  if (existingError) {
+    existingError.remove();
+  }
+  
+  // Create error message container
+  const errorContainer = document.createElement('div');
+  errorContainer.id = 'update-validation-errors';
+  errorContainer.style.cssText = `
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    border-left: 4px solid #fff;
+    animation: slideInDown 0.3s ease;
+  `;
+  
+  // Create error list
+  const errorList = document.createElement('ul');
+  errorList.style.cssText = `
+    margin: 0;
+    padding-left: 20px;
+    list-style-type: disc;
+  `;
+  
+  errors.forEach(error => {
+    const errorItem = document.createElement('li');
+    errorItem.textContent = error;
+    errorItem.style.cssText = `
+      margin: 5px 0;
+      font-weight: 500;
+    `;
+    errorList.appendChild(errorItem);
+  });
+  
+  errorContainer.appendChild(errorList);
+  
+  // Insert error message in modal body
+  const modalBody = document.querySelector('.modal-body');
+  if (modalBody) {
+    modalBody.insertBefore(errorContainer, modalBody.firstChild);
+  }
+}
+
+// Function to highlight invalid fields in update modal
+function highlightUpdateInvalidFields() {
+  const fields = [
+    { element: document.getElementById('updateTitle'), required: true },
+    { element: document.getElementById('updatePrice'), required: true, numeric: true },
+    { element: document.getElementById('updateCategory'), required: true },
+    { element: document.getElementById('updateTaxes'), required: false, numeric: true },
+    { element: document.getElementById('updateAds'), required: false, numeric: true },
+    { element: document.getElementById('updateDiscount'), required: false, numeric: true },
+    { element: document.getElementById('updateCount'), required: false, numeric: true }
+  ];
+  
+  fields.forEach(field => {
+    if (field.element) {
+      const isValid = field.element.value.trim() !== '' && 
+                     (!field.numeric || !isNaN(field.element.value)) &&
+                     (!field.required || field.element.value.trim() !== '');
+      
+      if (!isValid && field.element.value.trim() !== '') {
+        field.element.style.borderColor = '#dc3545';
+        field.element.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+      } else if (field.required && field.element.value.trim() === '') {
+        field.element.style.borderColor = '#dc3545';
+        field.element.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+      } else {
+        field.element.style.borderColor = '';
+        field.element.style.boxShadow = '';
+      }
+    }
+  });
+}
+
+// Function to clear update field highlighting
+function clearUpdateFieldHighlighting() {
+  const fields = [
+    'updateTitle', 'updatePrice', 'updateCategory', 
+    'updateTaxes', 'updateAds', 'updateDiscount', 'updateCount'
+  ];
+  
+  fields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.style.borderColor = '';
+      field.style.boxShadow = '';
+    }
+  });
+}
+
 // Save the updated product data
 function saveUpdate() {
   if (currentUpdateIndex === -1) return;
+  
+  // Clear any previous validation errors and highlighting
+  const existingError = document.getElementById('update-validation-errors');
+  if (existingError) {
+    existingError.remove();
+  }
+  clearUpdateFieldHighlighting();
+  
+  // Validate the update form
+  const validationErrors = validateUpdateProduct();
+  
+  if (validationErrors.length > 0) {
+    showUpdateValidationErrors(validationErrors);
+    highlightUpdateInvalidFields();
+    return; // Stop execution if validation fails
+  }
   
   // Get the save button and add loading state
   const saveBtn = document.querySelector('.btn-save');
@@ -218,13 +575,13 @@ function saveUpdate() {
   
   // Get updated values
   const updatedProduct = {
-    title: document.getElementById('updateTitle').value,
+    title: document.getElementById('updateTitle').value.trim(),
     price: document.getElementById('updatePrice').value,
-    taxes: document.getElementById('updateTaxes').value,
-    ads: document.getElementById('updateAds').value,
-    discount: document.getElementById('updateDiscount').value,
-    count: document.getElementById('updateCount').value,
-    category: document.getElementById('updateCategory').value,
+    taxes: document.getElementById('updateTaxes').value || 0,
+    ads: document.getElementById('updateAds').value || 0,
+    discount: document.getElementById('updateDiscount').value || 0,
+    count: document.getElementById('updateCount').value || 1,
+    category: document.getElementById('updateCategory').value.trim(),
     total: document.getElementById('updateTotal').textContent.replace('$', '')
   };
   
@@ -394,6 +751,40 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+  
+  // Add event listeners to clear validation errors when user starts typing
+  const formFields = [title, price, category, taxes, ads, discount, count];
+  formFields.forEach(field => {
+    if (field) {
+      field.addEventListener('input', function() {
+        // Clear validation errors when user starts typing
+        const existingError = document.getElementById('validation-errors');
+        if (existingError) {
+          existingError.remove();
+        }
+        clearFieldHighlighting();
+      });
+    }
+  });
+  
+  // Add event listeners for update modal fields
+  const updateFields = [
+    'updateTitle', 'updatePrice', 'updateCategory', 
+    'updateTaxes', 'updateAds', 'updateDiscount', 'updateCount'
+  ];
+  updateFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.addEventListener('input', function() {
+        // Clear validation errors when user starts typing
+        const existingError = document.getElementById('update-validation-errors');
+        if (existingError) {
+          existingError.remove();
+        }
+        clearUpdateFieldHighlighting();
+      });
+    }
+  });
 });
 
 
@@ -415,6 +806,5 @@ btn.onclick = function () {
     behavior: "smooth",
   });
 }
-
 
 
