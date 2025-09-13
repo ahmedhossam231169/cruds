@@ -67,8 +67,8 @@ if(localStorage.product != null){
   dataPro = [];
 }
 
-
-// Only set up form event listeners if the create button exists
+if(title.value !=""){
+    
 if(create) {
   create.onclick = function(){
    let newPro = {
@@ -81,6 +81,8 @@ if(create) {
      count:count.value,
      category:category.value,
     }
+}
+// Only set up form event listeners if the create button exists
     cleardata()
     dataPro.push(newPro)
 
@@ -413,5 +415,6 @@ btn.onclick = function () {
     behavior: "smooth",
   });
 }
+
 
 
